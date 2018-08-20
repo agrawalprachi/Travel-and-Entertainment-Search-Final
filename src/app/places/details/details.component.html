@@ -1,0 +1,257 @@
+ <div class="container" *ngIf="!displayResult && !displayFav" [@slide]="activePane">
+  <h4 style="margin-top: 3%" class="text-center">{{place_details.name}}</h4>
+  <div class="row">
+  	<div class="col-md-6">
+  	<button (click)="showList();" type="button" class="button btn-sm">
+          <i class="fa fa-angle-left">List</i>
+    </button>
+  	</div>
+  	<div class="col-md-6 text-right">
+  		<button *ngIf="!place_details?.star" (click)="addFavorite(place_details);" type="button" class="button btn-sm">
+            <i class="fa fa-star-o"></i>
+          </button>
+          <button *ngIf="place_details?.star" (click)="removeFavorite(place_details);" type="button" class="button btn-sm">
+            <i class="fa fa-star"></i>
+          </button>
+  		<a (click)="tweet();"><img height=32px; width=32px; src="http://cs-server.usc.edu:45678/hw/hw8/images/Twitter.png"/></a>
+  	</div>
+  </div>
+   <div style="margin-top: 3%; margin-bottom:2%;">
+	   <ul class=" row nav nav-tabs justify-content-end" style="color:#2D7CF6">
+		  <li class="nav-item">
+		    <a class="nav-link" style="cursor: pointer;" [ngClass]="{'nav-black':info}" [class.active] = "info" (click)="displayInfo();">Info</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" style="cursor: pointer;" [ngClass]="{'nav-black':photos}" [class.active] = "photos" (click)="displayPhotos();">Photos</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" style="cursor: pointer;" [ngClass]="{'nav-black':map}" [class.active] = "map" (click)="displayMap();">Map</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" style="cursor: pointer;" [ngClass]="{'nav-black':reviews}" [class.active] = "reviews" (click)="displayReviews();">Reviews</a>
+		  </li>
+	  </ul>
+  </div>
+  
+
+  <div *ngIf="reviews">
+    
+    <div class="row">
+	  
+	  	 <div class="dropdown">
+		  <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+		    {{reviewButtonText}}
+		  </button>
+		  <div class="dropdown-menu">
+		    <a style="cursor: pointer;" class="dropdown-item" (click)="reviewButtonText='Google Reviews'; review = 'google_reviews'; displayReviews();">Google Reviews</a>
+		    <a style="cursor: pointer;" class="dropdown-item" (click)="reviewButtonText= 'Yelp Reviews'; review = 'yelp_reviews'; displayReviews();">Yelp Reviews</a>
+		  </div>
+		</div> 
+	  
+	  
+	  		<div class="dropdown" style="margin-left: 1%;">
+			  <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+			    {{orderButtonText}}
+			  </button>
+			  <div class="dropdown-menu">
+			    <a style="cursor: pointer;" class="dropdown-item" (click)="orderButtonText= 'Default Order'; order = 'default_order'; displayReviews();">Default Order</a>
+			    <a style="cursor: pointer;" class="dropdown-item" (click)="orderButtonText= 'Highest Rating'; order = 'highest_rating'; displayReviews();">Highest Rating</a>
+			    <a style="cursor: pointer;" class="dropdown-item" (click)="orderButtonText= 'Lowest Rating'; order = 'lowest_rating'; displayReviews();">Lowest Rating</a>
+			    <a style="cursor: pointer;" class="dropdown-item" (click)="orderButtonText= 'Most Recent'; order = 'most_recent'; displayReviews();">Most Recent</a>
+			    <a style="cursor: pointer;" class="dropdown-item" (click)="orderButtonText= 'Least Recent'; order = 'least_recent'; displayReviews();">Least Recent</a>
+			  </div>
+			</div>
+	  
+	</div>
+
+	<div *ngIf="googleReviews">
+		<div class="container" *ngFor="let reviewItem of reviewsList">
+			<div class="row review-card">
+				<div class="col-md-1">
+					<a target="_blank" href="{{reviewItem.author_url}}"><img height= 60; width=60; src={{reviewItem.profile_photo_url}}/></a>
+				</div>
+				<div class="col-md-11">
+					<div><a target="_blank" href="{{reviewItem.author_url}}">{{reviewItem.author_name}}</a></div>
+					<div>
+					<ng-template #t let-fill="fill">
+					  <span class="star" [class.full]="fill === 100">
+					    <span class="half" [style.width.%]="fill"><span class="fa fa-star"></span></span><span style="color:transparent;" class="fa fa-star"></span>
+					  </span>
+					</ng-template>
+					
+					<ngb-rating [(rate)]="reviewItem.rating" [starTemplate]="t" [readonly]="true" max="5"></ngb-rating>
+
+					{{reviewItem.time * 1000 | date:'yyyy-MM--dd HH:mm:ss'}}</div>
+					<div>{{reviewItem.text}}</div>
+				</div>
+			</div>
+		</div>	    
+
+	  	<div *ngIf="noGoogleReviews" style="margin-top: 4%;" class=" container alert alert-warning" role="alert">
+			        No records.
+		</div>
+
+	</div>
+
+	<div *ngIf="yelpReviews">
+	  	<div class="container" *ngFor="let reviewItem of yelpReviewsList">
+			<div class="row review-card">
+				<div class="col-md-1">
+					<a target="_blank" href="{{reviewItem.url}}"><img height= 60; width=60; style="border-radius: 30px" src={{reviewItem.user.image_url}}/></a>
+				</div>
+				<div class="col-md-11">
+					<div><a target="_blank" href="{{reviewItem.url}}">{{reviewItem.user.name}}</a></div>
+					<div>
+					<ng-template #t let-fill="fill">
+					  <span class="star" [class.full]="fill === 100">
+					    <span class="half" [style.width.%]="fill"><span class="fa fa-star"></span></span><span style="color:transparent;" class="fa fa-star"></span>
+					  </span>
+					</ng-template>
+
+					<ngb-rating [(rate)]="reviewItem.rating" [starTemplate]="t" [readonly]="true" max="5"></ngb-rating>
+					{{reviewItem.time_created}}</div>
+					<div>{{reviewItem.text}}</div>
+				</div>
+			</div>
+		</div>
+	  	<div *ngIf="noYelpReviews" style="margin-top: 4%;" class=" container alert alert-warning" role="alert">
+			        No records.
+		</div>
+	</div>
+
+  </div>
+
+
+  <div class="row" *ngIf="info">
+  	  <table class="table table-striped">
+	    <tbody>
+	        <tr *ngIf="place_details?.formatted_address">
+	          <th>Address</th>
+	            <td>{{place_details.formatted_address}}</td>
+	        </tr>
+	        <tr *ngIf="place_details?.international_phone_number">
+	          <th>Phone Number</th>
+	            <td>{{place_details.international_phone_number}}</td>
+	        </tr>
+	        <tr *ngIf="priceLevel.length > 0">
+	          <th>Price Level</th>
+	            <td><span *ngFor="let x of priceLevel">$</span></td>
+	        </tr>
+	        <tr *ngIf="place_details?.rating">
+	          <th>Rating</th>
+	          	<td><span>{{place_details.rating}}</span>
+	          	<!-- <span *ngFor="let x of rating" class="fa fa-star"></span> -->
+					<ng-template #t let-fill="fill">
+					  <span class="star" [class.full]="fill === 100">
+					    <span class="half" [style.width.%]="fill"><span class="fa fa-star"></span></span><span style="color:transparent;" class="fa fa-star"></span>
+					  </span>
+					</ng-template>
+
+					<ngb-rating [(rate)]="place_details.rating" [starTemplate]="t" [readonly]="true" max="5"></ngb-rating>
+				</td>	
+	        </tr>
+	        <tr *ngIf="place_details?.url">
+	          <th>Google Page</th>
+	          	<td><a href="{{place_details.url}}" target="_blank">{{place_details.url}}</a></td>
+	        </tr>
+	        <tr *ngIf="place_details?.website">
+	          <th>Website</th>
+	          	<td><a href="{{place_details.website}}" target="_blank">{{place_details.website}}</a></td>
+	        </tr>
+	        <tr class="container" *ngIf="openNow != 0">
+	            <th>Hours</th>
+	          	<td>
+	          	<span *ngIf="openNow == 1">Open Now </span>
+	          	<span *ngIf="openNow == 2">Closed </span>
+	          	
+	          	<a (click)="openDialog();" data-toggle="modal" data-target="#myModal"  style="color:#2D7CF6; text-decoration: underline; cursor: pointer;">Daily Open Hours</a>
+	          	
+	          	</td>
+	       	</tr>
+	    </tbody>
+	  </table>
+  </div>
+
+
+	  	<div class="photorow" *ngIf="photos">
+	  		<div class="column">
+	  			<a *ngFor=" let photo of photoColumn1" target = "_blank" href="{{photo}}"><img src={{photo}} class="img-fluid img-thumbnail rounded float-left"></a>
+	  		</div>
+	  		<div class="column">
+	  			<a *ngFor=" let photo of photoColumn2" target = "_blank" href="{{photo}}"><img src={{photo}} class="img-fluid img-thumbnail rounded float-left"></a>
+	  		</div>
+	  		<div class="column">
+	  			<a *ngFor=" let photo of photoColumn3" target="_blank" href="{{photo}}"><img src={{photo}} class="img-fluid img-thumbnail rounded float-left"></a>
+	  		</div>
+	  		<div class="column">
+	  			<a *ngFor=" let photo of photoColumn4" target="_blank" href="{{photo}}"><img src={{photo}} class="img-fluid img-thumbnail rounded float-left"></a>
+	  		</div>
+	  		<div *ngIf="noPhotos" class=" col-md-12 alert alert-warning" role="alert">
+		        No records.
+		    </div>  	 
+	    </div>
+
+	  
+
+
+	<div class="row" [ngStyle]="{'display': map?'block':'none'}">
+	  	<div class="container">  	
+			<form>
+			  <div class="form-row">
+			    <div class="form-group col-md-4">
+			      <label for="from">From</label>
+			      <input (input)="checkFrom()" #locfrom type="text" name="fromform" [(ngModel)]="mapfields.from" class="form-control" id="from">
+			    </div>
+			    <div class="form-group col-md-4">
+			      <label for="to">To</label>
+			      <input type="text" class="form-control" id="to" value="{{place_details.name}}, {{place_details.formatted_address}}" readonly>
+			    </div>
+			    <div class="form-group col-md-2">
+			      <label for="travel_mode">Travel Mode</label>
+			      <select name="modefrom" class="form-control" [(ngModel)]="mapfields.mode">
+		              <option value="DRIVING">Driving</option>
+		              <option value="BICYCLING">Bicycling</option>
+		              <option value="TRANSIT">Transit</option>
+		              <option value="WALKING">Walking</option>
+		           </select>
+			    </div>
+			    <div class="form-group col-md-2">
+			      <button style="margin-top: 19%"[disabled]="setDisableDirection" class="btn btn-primary form-control" (click)="getDirections();">Get Directions</button>
+			    </div>
+			  </div>
+			</form>
+			
+			<a *ngIf="pegman" (click)="showStreetView();"><img style="border: solid 1px lightgray; border-radius: 4px; margin-bottom: 1%;" height="42" width="42" src="http://cs-server.usc.edu:45678/hw/hw8/images/Pegman.png"/></a>
+			<a *ngIf="!pegman" (click)="displayMap();"><img style="margin-bottom: 1%;" height="42" width="42" src="http://cs-server.usc.edu:45678/hw/hw8/images/Map.png"/></a>
+			
+			<div #mapDiv style="height:400px">
+				
+			</div>
+			<div #mapPanel></div>
+	  </div>
+	</div>
+
+</div>
+<div class="container">
+<div [ngStyle]="{'display': showDialog?'block':'none'}" class="modal" id ="myModal">
+    	<div class="modal-dialog">
+	  	<div class="modal-content">
+	      <div class="modal-header">
+	        <h3 class = "modal-title">Open Hours</h3>
+	      </div>
+	      <div class="modal-body">
+	        <tbody *ngFor="let time of weekdayText">
+	        	<tr>
+	        		<th>{{time.day}}</th>
+	        		<td>{{time.time}}</td>
+	        	</tr>
+	        	<hr style="color: lightgray">
+	        </tbody>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" (click)="closeDialog()">Close</button>
+	      </div>
+	    </div>
+	    </div>
+</div>
+</div>

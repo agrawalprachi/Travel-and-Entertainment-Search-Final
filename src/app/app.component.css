@@ -1,0 +1,11 @@
+.center-block {
+	float:none;
+}
+
+ul li{
+  display: inline;
+}
+
+.error-boundary{
+	border: solid 2px red;
+}

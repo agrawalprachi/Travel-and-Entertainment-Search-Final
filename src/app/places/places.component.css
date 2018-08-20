@@ -1,0 +1,30 @@
+.center-block {
+	float:none;
+}
+
+.fa-star{
+	color:orange;
+}
+
+.button{
+	border: solid 1px lightgray;
+	background-color: white;
+	color:black;
+}
+
+.btn-default{
+	border: solid 1px gray;
+	background-color: transparent;
+	color:black;
+	padding-left:1%; 
+	padding-right:1%;
+}
+
+.highlighted-class{
+	background-color: #FEDF96;
+	z-index: -100;
+}
+
+tr:not(.no-hover):hover {
+    background-color: lightgray;
+}

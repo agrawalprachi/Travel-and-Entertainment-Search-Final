@@ -1,0 +1,91 @@
+<div [@slide]="activePane" class="container" *ngIf="displayResult" style="margin-top: 5%;" >
+  <button (click)="getPlaceDetails(placeIdDetailBtn);" type="button" class="button btn-sm" style="margin-bottom: 2%; float: right" [disabled]="disableDetailBtn">
+      Details<i class="fa fa-angle-right"></i>
+  </button>
+  <div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr class="no-hover">
+        <th>#</th>
+        <th>Category</th>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Favorite</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody *ngFor="let place of placesInternal, let i=index">
+      <tr [ngClass]="{'highlighted-class': place.place_id == highlighted_item}">
+        <td>{{20*index + i+1}}</td>
+        <td><img style="width:40px; height:40px" src = {{place.icon}} /></td>
+        <td>{{place.name}}</td>
+        <td>{{place.vicinity}}</td>
+        <td>
+          <button *ngIf="!place?.star" (click)="addFavorite(place, i);" type="button" class="button btn-sm">
+            <i class="fa fa-star-o"></i>
+          </button>
+          <button *ngIf="place?.star" (click)="addFavorite(place, i);" type="button" class="button btn-sm">
+            <i class="fa fa-star"></i>
+          </button>
+        </td>
+        <td>
+          <button (click)="getPlaceDetails(place.place_id);" type="button" class="button btn-sm">
+            <i class="fa fa-angle-right"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+
+  </table>
+  </div>
+  <div class="container">
+    <div style="text-align: center; margin-bottom: 4%">
+        <button *ngIf="index>0 && index<3" (click)="previousPlaces()" type="button" class="btn btn-default">Previous</button>
+        <button *ngIf="index<2 && placesInternal.length == 20" (click)="searchMorePlaces()" type="button" class="btn btn-default">Next</button>
+    </div>
+  </div>  
+
+</div>
+
+<div class="container" *ngIf="displayFav" style="margin-top: 5%;">
+<button (click)="getPlaceDetails(placeIdDetailBtn);" type="button" class="button btn-sm" style="margin-bottom: 2%; float: right" [disabled]="disableDetailBtn">
+      Details<i class="fa fa-angle-right"></i>
+</button>
+<div class="table-responsive">
+<table class="table">
+  <thead>
+    <tr class="no-hover">
+      <th>#</th>
+      <th>Category</th>
+      <th>Name</th>
+      <th>Address</th>
+      <th>Favorite</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+ 
+  <tbody *ngFor="let place of favPlaceIdList, let i=index">
+    <tr [ngClass]="{'highlighted-class': place.place_id == highlighted_item}">
+      <td>{{i+1}}</td>
+      <td><img style="width:40px; height:40px" src = {{place.icon}} /></td>
+      <td>{{place.name}}</td>
+      <td>{{place.vicinity}}</td>
+      <td>
+        <button (click)="removeFavorite(place);" type="button" class="button btn-sm">
+          <i class="fa fa-trash-o"></i>
+        </button>
+      </td>
+      <td>
+        <button (click)="getPlaceDetails(place.place_id);" type="button" class="button btn-sm">
+          <i class="fa fa-angle-right"></i>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+<div class="container" *ngIf="displayDetails">
+<app-details (listClicked)="list_clicked();" [activePaneInp]="isVisible? 'left':'right'" (backToList)="list($event)" [displayResult] = displayResult [displayFav]= displayFav [mapJsonObject] = mapJsonObject [place_details] = "details" [favoriteList]= "favPlaceIdList" [placesInternal]= "placesInternal" ></app-details>
+</div>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="/">
+  <title>Hw 8</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="container panel-body" style="border: 2px solid silver; border-radius: 10px; background-color:#F8F8F8 ">
+      <h3 style="margin-bottom: 2%; margin-top: 2%; font-weight: 30px" class="text-center">Travel and Entertainment Search</h3> 
+      <form #formid name="searchForm" id="myform" >
+        <div class="form-group row">
+          <span class="col-md-2"></span>
+          <label for="keyword" class="col-md-2 col-form-label">Keyword<span style="color:red">*</span></label>
+          <div class="col-md-6">
+            <input [ngClass]="{'error-boundary': !correctKeyword() && keyword.touched}" #keyword="ngModel" class="form-control" name="keyword" type="text" [(ngModel)]="inputs.keyword">
+            <div *ngIf = "!correctKeyword() && keyword.touched"  style="color:red">Please Enter a Keyword</div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <span class="col-md-2"></span>
+          <label for="category" class="col-md-2 col-form-label">Category:</label>
+          <div class="col-md-3">
+            <select class="form-control" name="category" [(ngModel)]="inputs.category">
+              <option value="default" selected="selected">Default</option>
+              <option value="airport">Airport</option>
+              <option value="amusement_park">Amusement Park</option>
+              <option value="aquarium">Aquarium</option>
+              <option value="art_gallery">Art Gallery</option>
+              <option value="bakery">Bakery</option>
+              <option value="bar">Bar</option>
+              <option value="beauty_salon">Beauty Salon</option>
+              <option value="bowling_alley">Bowling Alley</option>
+              <option value="bus_station">Bus Station</option>
+              <option value="cafe">Cafe</option>
+              <option value="camp_ground">Camp Ground</option>
+              <option value="car_rental">Car Rental</option>
+              <option value="casino">Casino</option>
+              <option value="lodging">Lodging</option>
+              <option value="movie_theater">Movie Theater</option>
+              <option value="museum">Museum</option>
+              <option value="night_club">Night Club</option>
+              <option value="park">Park</option>
+              <option value="parking">Parking</option>
+              <option value="restaurant">Restaurant</option>
+              <option value="shopping_mall">Shopping Mall</option>
+              <option value="stadium">Stadium</option>
+              <option value="subway_station">Subway Station</option>
+              <option value="taxi_stand">Taxi Stand</option>
+              <option value="train_station">Train Station</option>
+              <option value="transit_station">Transit Station</option>
+              <option value="travel_agency">Travel Agency</option>
+              <option value="zoo">Zoo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <span class="col-md-2"></span>
+          <label for="distance" class="col-md-2 col-form-label">Distance(miles):</label>
+          <div class="col-md-3">
+            <input class="form-control" name="distance" type="text" placeholder="10" [(ngModel)]="inputs.distance">
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <span class="col-md-2"></span>
+          <label for="location" class="col-md-2 col-form-label">From<span style="color:red">*</span></label>
+          <div class="col-md-6" id="location">
+            <div class="form-check">
+              <input [(ngModel)] = "checkRadio" value = "auto" name="location" class="form-check-input" type="radio" id="current_loc" (click)="disableInputBox();" checked = "checked">
+              <label class="form-check-label" for="cuurent_loc">Current location
+              </label>
+            </div>
+            <div class="form-check">
+              <input [(ngModel)] = "checkRadio" value = "manual" name="location" class="form-check-input" type="radio" id="location" (click)="enableInputBox();">
+              <label class="form-check-label" for="location">
+                Other. Please specify:
+              </label>
+            </div>
+            <input [ngClass]="{'error-boundary': !correctLocation() && loctext2.touched}" #loctext #loctext2="ngModel" [(ngModel)] = "inputs.locationText" name = "locationText" class="form-control" id="manual_location" type="text" placeholder="location" ngDefaultControl [disabled]="setDisable" ng-required = "true">
+            <div *ngIf = "!correctLocation() && loctext2.touched" style="color:red">Please Enter a Location</div>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-md-2"></div>
+          <button style="margin-left: 1.5%; margin-right: 0.6%" [disabled]="!searchable()" type="submit" (click)="searchPlace();" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
+          <button type="button" (click)="clear();" class="btn btn-default">Clear</button>
+        </div>
+
+      </form>
+    </div>
+
+    
+        <div style="text-align: center; margin-top: 1.6%;">
+            <button *ngIf="!displayResult" class="btn btn-default" (click)="searchPlace();" style="color: #2D7CF6; background-color: transparent;">Results</button>
+            <button *ngIf="displayResult" class="btn btn-primary" (click)="searchPlace();">Results</button>
+            <button *ngIf="!favBtn" class="btn btn-default" (click)="displayFavoriteList();" style="color: #2D7CF6; background-color: transparent;">Favorites</button>
+            <button *ngIf="favBtn" class="btn btn-primary" (click)="displayFavoriteList();">Favorites</button>   
+        </div>
+     
+     <app-places *ngIf="isLoading" (triggerButton)="trig($event)" [mapJsonObject]= mapJsonObject [displayResult]=displayResult [displayFav]=displayFav [places]=placesList [next_page_token]=nextPageToken              (passFavList)="doSomething($event)" ></app-places>
+     <div *ngIf="noPlaces" class="container alert alert-warning" style="margin-top: 7%;" role="alert">
+        No records.
+     </div>
+     <div *ngIf="noFav && favBtn" class="container alert alert-warning" style="margin-top: 7%;" role="alert">
+        No records.
+     </div>
+
+     <div *ngIf="!dataFetched" class="container">
+       <div class="row">
+         <div class="col-md-12" style="text-align: center;">
+           <div class="progress" style="margin-top: 7%; margin-bottom: 10%;">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+           </div>
+         </div>
+       </div>
+     </div>
+     
+</body>
+</html>
