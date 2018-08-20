@@ -1,6 +1,11 @@
 # Travel and Entertainment Search Website
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.3.
+A	webpage	that allows	users	to search	for	places	using	the	Google	Places	
+API	and	displays	the	results	on	the	same	page	below	the	form.	Once	the	user	clicks	on	a	button	to	search	
+for	place	details,	the webpage	displays	several	 tabs	which	contain	an	info	 table,	photos	of	 the	
+place,	map	and	route	search form	and	reviews	respectively. The webpage	supports adding
+places to	and	removing	places from	favorites	list and posting place	info	to	Twitter.
 
 ## Development server
 
